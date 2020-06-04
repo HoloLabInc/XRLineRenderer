@@ -54,7 +54,8 @@
         // We calculate the aspect ratio since the lines are
         // being transformed into a psuedo-screen space area
         half aspectRatio = _ScreenParams.x / _ScreenParams.y;
-        
+        aspectRatio = 3;
+
         // Determine the location of our neighbor
         #if LINE_WORLD_SPACE
             half4 neighborPos = mul(UNITY_MATRIX_VP, v.texcoord1);
@@ -78,6 +79,8 @@
         // Otherwise, we are a pipe
         half2 perpVec = (neighborPos.xy / neighborPos.w) - (o.pos.xy / o.pos.w);
         half pipeFlag = step(.001, length(perpVec));
+        pipeFlag = 1.0;
+
         perpVec = normalize(perpVec).yx;
         perpVec.y *= -1;
         perpVec.xy *=  (2 * (v.texcoord.x - .5)) * (2 * (v.texcoord.y - .5));
@@ -100,6 +103,8 @@
         // We need to conditionally undo the perspective correction on these UV coordinates
         // And the w coordinate is needed for that
         float sizeRatio = ((expandDistanceSource + expandDistanceDest) / expandDistanceDest);
+        sizeRatio = 1;
+
         o.uv = float4(v.texcoord.x, v.texcoord.y, pipeFlag, sizeRatio);
         o.uv.y = o.uv.y * (1.0 - pipeFlag) + .5 * pipeFlag;
         o.uv.xy *= sizeRatio;
