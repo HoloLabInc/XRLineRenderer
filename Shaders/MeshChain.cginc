@@ -23,6 +23,7 @@
         float4  uv : TEXCOORD0;
         fixed4 color : COLOR;
 
+        UNITY_VERTEX_INPUT_INSTANCE_ID
         UNITY_VERTEX_OUTPUT_STEREO
     };
 
@@ -30,9 +31,15 @@
     {
         meshChain_vertex o;
 
+        UNITY_INITIALIZE_OUTPUT(meshChain_vertex, o);
+        UNITY_SETUP_INSTANCE_ID(v);
+        UNITY_TRANSFER_INSTANCE_ID(v, o);
+        UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+        /*
         UNITY_SETUP_INSTANCE_ID(v);
         UNITY_INITIALIZE_OUTPUT(meshChain_vertex, o);
         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+        */
 
         // In 5.4 and later we have stereo instance rendering so we go through the
         // ClipPos function which is aware of the proper projection matrix per-eye
@@ -128,7 +135,9 @@
 
     half4 frag(meshChain_vertex i) : COLOR
     {
-        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+        UNITY_SETUP_INSTANCE_ID(i);
+
+        // UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 
         // This used to be a texture lookup, we have now turned it into pure math
         // Undo the perspective correction
