@@ -23,8 +23,8 @@
         float4  uv : TEXCOORD0;
         fixed4 color : COLOR;
 
-        UNITY_VERTEX_OUTPUT_STEREO
         UNITY_VERTEX_INPUT_INSTANCE_ID
+        UNITY_VERTEX_OUTPUT_STEREO
     };
 
     meshChain_vertex vert(appdata_meshChain v)
@@ -107,10 +107,14 @@
         // expandDistanceSource = 0.01;
         //if (perpVec.y > 0) {
         if(v.texcoord.x > 0){
-            o.pos.y += 0.1;
+            //float a = UNITY_MATRIX_P._m11;
+            //float a = UNITY_MATRIX_P._m00;
+            float a = UNITY_MATRIX_P._m11;
+            //o.pos.y = o.pos.y + _ScreenParams.y / 1080.0 * 0.1;
+                o.pos.y = o.pos.y + a * 0.1;
         }
         else {
-            o.pos.y -= 0.1;
+            // o.pos.y = o.pos.y - 0.1;
         }
         // o.pos.y += (pipeFlag ? perpVec.y : billboardVec.y) * expandDistanceSource * aspectRatio;
         /*
@@ -210,6 +214,8 @@
 
     half4 fragColor(meshChain_vertex i) : COLOR
     {
+        UNITY_SETUP_INSTANCE_ID(i);
+
         return half4(i.color.r,0,0,1);
     }
 #endif // MESH_CHAIN
