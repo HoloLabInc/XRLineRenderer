@@ -23,19 +23,21 @@
         float4  uv : TEXCOORD0;
         fixed4 color : COLOR;
 
-        UNITY_VERTEX_INPUT_INSTANCE_ID
         UNITY_VERTEX_OUTPUT_STEREO
+        UNITY_VERTEX_INPUT_INSTANCE_ID
     };
 
     meshChain_vertex vert(appdata_meshChain v)
     {
         meshChain_vertex o;
 
+
         UNITY_INITIALIZE_OUTPUT(meshChain_vertex, o);
         UNITY_SETUP_INSTANCE_ID(v);
         UNITY_TRANSFER_INSTANCE_ID(v, o);
         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-        /*
+
+/*
         UNITY_SETUP_INSTANCE_ID(v);
         UNITY_INITIALIZE_OUTPUT(meshChain_vertex, o);
         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
@@ -50,7 +52,7 @@
         #else
             o.pos = UnityObjectToClipPos(v.vertex);
         #endif
-
+            /*
         // We calculate the aspect ratio since the lines are
         // being transformed into a psuedo-screen space area
         half aspectRatio = _ScreenParams.x / _ScreenParams.y;
@@ -74,21 +76,24 @@
             half expandDistanceSource = max(_lineRadius * .1, _lineRadius.y) * v.texcoord.z;
             half expandDistanceDest = max(_lineRadius * .1, _lineRadius.y) * v.texcoord.w;
         #endif
+        */
 
         // If the screen space distance between these two points is under a threshold, we are a billboard
         // Otherwise, we are a pipe
+            /*
         half2 perpVec = (neighborPos.xy / neighborPos.w) - (o.pos.xy / o.pos.w);
         half pipeFlag = step(.001, length(perpVec));
         pipeFlag = 1.0;
 
         perpVec = normalize(perpVec).yx;
         perpVec.y *= -1;
-        perpVec.xy *=  (2 * (v.texcoord.x - .5)) * (2 * (v.texcoord.y - .5));
-
+        //perpVec.xy *=  (2 * (v.texcoord.x - .5)) * (2 * (v.texcoord.y - .5));
+        perpVec.xy *= (2 * (v.texcoord.x - .5));
+        */
         // Billboard logic
         // We billboard based off the UV's we had stored
         // Since the UV's represent each corner, we convert these into offsets 
-        half2 billboardVec = 2 * (v.texcoord.xy - .5);
+        // half2 billboardVec = 2 * (v.texcoord.xy - .5);
 
         // Whether this element is a billboard or a pipe is encoded in the secondary texture coordinates
         // A 0 on the u coordinate specifies using the billboard rendering mode
@@ -96,20 +101,42 @@
 
         // o.pos.x += lerp(billboardVec.x, perpVec.x, pipeFlag) * expandDistanceSource;
         // o.pos.y += lerp(billboardVec.y, perpVec.y, pipeFlag) * expandDistanceSource*aspectRatio;
-        o.pos.x += (pipeFlag ? perpVec.x : billboardVec.x) * expandDistanceSource;
-        o.pos.y += (pipeFlag ? perpVec.y : billboardVec.y) * expandDistanceSource * aspectRatio;
+
+
+        //o.pos.x += (pipeFlag ? perpVec.x : billboardVec.x) * expandDistanceSource;
+        // expandDistanceSource = 0.01;
+        //if (perpVec.y > 0) {
+        if(v.texcoord.x > 0){
+            o.pos.y += 0.1;
+        }
+        else {
+            o.pos.y -= 0.1;
+        }
+        // o.pos.y += (pipeFlag ? perpVec.y : billboardVec.y) * expandDistanceSource * aspectRatio;
+        /*
+        if (perpVec.y < 0.9) {
+            //o.pos.y += (pipeFlag ? perpVec.y : billboardVec.y) * expandDistanceSource * aspectRatio;
+            //o.pos.y += 1;
+            o.pos.y += perpVec.y;
+            //o.pos.y += 0.01;
+            //o.pos.y += 100.0;
+        }
+        */
 
         // We store the w coordinate of the worldspace position separately here
         // We need to conditionally undo the perspective correction on these UV coordinates
         // And the w coordinate is needed for that
-        float sizeRatio = ((expandDistanceSource + expandDistanceDest) / expandDistanceDest);
-        sizeRatio = 1;
+        // float sizeRatio = ((expandDistanceSource + expandDistanceDest) / expandDistanceDest);
+        // sizeRatio = 1;
 
+        /*
         o.uv = float4(v.texcoord.x, v.texcoord.y, pipeFlag, sizeRatio);
         o.uv.y = o.uv.y * (1.0 - pipeFlag) + .5 * pipeFlag;
         o.uv.xy *= sizeRatio;
 
         o.color = v.color * _Color;
+        */
+        o.color = _Color;
         return o;
     }
             
@@ -183,6 +210,6 @@
 
     half4 fragColor(meshChain_vertex i) : COLOR
     {
-        return half4(i.color.rgb,1);
+        return half4(i.color.r,0,0,1);
     }
 #endif // MESH_CHAIN
