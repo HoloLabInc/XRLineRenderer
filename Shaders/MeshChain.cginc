@@ -86,8 +86,11 @@
 
         // o.pos.x += lerp(billboardVec.x, perpVec.x, pipeFlag) * expandDistanceSource;
         // o.pos.y += lerp(billboardVec.y, perpVec.y, pipeFlag) * expandDistanceSource*aspectRatio;
-        o.pos.x += (pipeFlag ? perpVec.x : billboardVec.x) * expandDistanceSource;
-        o.pos.y += (pipeFlag ? perpVec.y : billboardVec.y) * expandDistanceSource * aspectRatio;
+        // o.pos.x += (pipeFlag ? perpVec.x : billboardVec.x) * expandDistanceSource * UNITY_MATRIX_P._m00 * 1;
+        // o.pos.y += (pipeFlag ? perpVec.y : billboardVec.y) * expandDistanceSource * aspectRatio * UNITY_MATRIX_P._m11 * 1;
+
+        o.pos.x += (pipeFlag ? perpVec.x : billboardVec.x) * expandDistanceSource * UNITY_MATRIX_P._m11 * 0.55;
+        o.pos.y += (pipeFlag ? perpVec.y : billboardVec.y) * expandDistanceSource * aspectRatio * UNITY_MATRIX_P._m11 * 0.55;
 
         // We store the w coordinate of the worldspace position separately here
         // We need to conditionally undo the perspective correction on these UV coordinates
