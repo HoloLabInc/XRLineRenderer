@@ -265,6 +265,11 @@ namespace Unity.XRLineRenderer
         /// <param name="sizeModification">What the radius or width of the element should be</param>
         public void SetElementSize(int elementIndex, float sizeModification)
         {
+            // Corrects thin lines on HoloLens
+#if WINDOWS_UWP
+            sizeModification *= 1.26f;
+#endif
+
             var offset = elementIndex * 4;
             m_ShapeData[offset] = new Vector4(0, 0, sizeModification, sizeModification);
             m_ShapeData[offset + 1] = new Vector4(1, 0, sizeModification, sizeModification);
@@ -280,6 +285,12 @@ namespace Unity.XRLineRenderer
         /// <param name="endSize">The end size of the pipe</param>
         public void SetElementSize(int elementIndex, float startSize, float endSize)
         {
+            // Corrects thin lines on HoloLens
+#if WINDOWS_UWP
+            startSize *= 1.26f;
+            endSize *= 1.26f;
+#endif
+
             var offset = elementIndex * 4;
 
             m_ShapeData[offset] = new Vector4(0, 0, startSize, endSize);
